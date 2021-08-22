@@ -7,7 +7,7 @@
 #define MPU6050_DEFAULT_ADDRESS     MPU6050_ADDRESS_AD0_LOW // por defecto AD0 en 
 
 Simple_MPU6050 mpu;       // crea objeto con nombre mpu
-Adafruit_MCP4725 dac;
+Adafruit_MCP4725 dac;  //Declara una instancia del dac
 
 ENABLE_MPU_OVERFLOW_PROTECTION();   // activa proteccion
 #define OFFSETS  -1418,   -1220,    1686,      42,      35,       6
