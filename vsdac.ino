@@ -6,6 +6,7 @@
 #define MPU6050_ADDRESS_AD0_HIGH    0x69      // direccion I2C con AD0 en HIGH
 #define MPU6050_DEFAULT_ADDRESS     MPU6050_ADDRESS_AD0_LOW // por defecto AD0 en 
 
+int steps[] = {-9, -20, 6, 15, 17, 2, 19, -13, 9, -20, -6, -15, -17, -2, -18, 13};
 Simple_MPU6050 mpu;       // crea objeto con nombre mpu
 Adafruit_MCP4725 dac;
 
@@ -35,15 +36,15 @@ void mostrar_valores (int16_t *gyro, int16_t *accel, int32_t *quat, uint32_t *ti
     mpu.GetYawPitchRoll(ypr, &q, &gravity); // funcion obtiene valores de yaw, ptich, roll
     mpu.ConvertToDegrees(ypr, xyz);   // funcion convierte a grados sexagesimales
         //-65
-        if(xyz[1]>=25){
+    if(xyz[1]>=25) {
       xyz[1]=xyz[1]-1;
-      }
-    if(xyz[1]>=45){
+    }
+    if(xyz[1]>=45) {
       xyz[1]=xyz[1]-2;
-      }
+    }
     if(xyz[1]>=60){
       xyz[1]=xyz[1]-1;
-      }
+    }
     Serial.printfloatx(F("Pitch"), xyz[1], 9, 4, F(",   "));  // muestra en monitor serie rotacion de eje Y, pitch
     Serial.println();
     // salto de linea
@@ -78,10 +79,10 @@ void setup() {
   pinMode(7,OUTPUT);
   dac.begin(0x60);
  // degreesVolt=7;
-  esc.attach(8);
+  esc.attach(10);
 
  Serial.begin(115200);
-delay(500);
+  delay(500);
 #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE  // activacion de bus I2C a 400 Khz
   Wire.begin();
   Wire.setClock(400000);
@@ -122,13 +123,19 @@ void loop() {
 //        esc.writeMicroseconds(val);
 //        delay(5000);
 //      }
-  
+  // for (int i = 0; i < sizeof(steps); i = i+1){
+  //   val=map(steps[i], -20 , 20, 1200, 1500);
+  //   esc.writeMicroseconds(val);
+  //   delay(5000);
+  // }
  
  
  val=analogRead(A2);
- //val=10;
+//  val=10;
  
- //esc.writeMicroseconds(long(1000));
- val=map(val, 0 , 1023, 1200, 1500);
- esc.writeMicroseconds(val);
+  plot = map(val, 0, 1023, 1200, 1500);
+  esc.writeMicroseconds(1200);
+  delay(1);
+
+
 }       // a funcion mostrar_valores si es el caso
