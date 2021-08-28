@@ -17,7 +17,8 @@ ENABLE_MPU_OVERFLOW_PROTECTION();   // activa proteccion
 
 #define printfloatx(Name,Variable,Spaces,Precision,EndTxt) print(Name); {char S[(Spaces + Precision + 3)];Serial.print(F(" ")); Serial.print(dtostrf((float)Variable,Spaces,Precision ,S));}Serial.print(EndTxt);
 // printfloatx funcion para mostrar en monitor serie datos para evitar el uso se multiples print()
-int plot;
+int plot,plo;
+int inic_motor=false;
 int intPin = 2;
 //uint8_t val;
 int val;
@@ -59,6 +60,7 @@ void mostrar_valores (int16_t *gyro, int16_t *accel, int32_t *quat, uint32_t *ti
       delay(1);
   }
 }
+
 
 //void interruptCount()
 //{
@@ -132,10 +134,15 @@ void loop() {
  
  val=analogRead(A2);
 //  val=10;
- 
-  plot = map(val, 0, 1023, 1200, 1500);
-  esc.writeMicroseconds(1200);
+   
+  plo = map(val, 0, 1023, 1200, 1500);
   delay(1);
 
+  if(inic_motor == false){
+  esc.writeMicroseconds(1000);
+  delay(15000);
+  inic_motor = true;
+  }
+  esc.writeMicroseconds(1400);
 
-}       // a funcion mostrar_valores si es el caso
+}       // a funcion mostrar_valores si es el caso  
