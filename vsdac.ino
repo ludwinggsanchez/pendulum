@@ -17,7 +17,8 @@ ENABLE_MPU_OVERFLOW_PROTECTION();   // activa proteccion
 
 #define printfloatx(Name,Variable,Spaces,Precision,EndTxt) print(Name); {char S[(Spaces + Precision + 3)];Serial.print(F(" ")); Serial.print(dtostrf((float)Variable,Spaces,Precision ,S));}Serial.print(EndTxt);
 // printfloatx funcion para mostrar en monitor serie datos para evitar el uso se multiples print()
-int plot,plo;
+int plot,plo,co;
+int escalon = 0;
 int inic_motor=false;
 int intPin = 2;
 //uint8_t val;
@@ -37,17 +38,18 @@ void mostrar_valores (int16_t *gyro, int16_t *accel, int32_t *quat, uint32_t *ti
     mpu.GetYawPitchRoll(ypr, &q, &gravity); // funcion obtiene valores de yaw, ptich, roll
     mpu.ConvertToDegrees(ypr, xyz);   // funcion convierte a grados sexagesimales
         //-65
-    if(xyz[1]>=25) {
-      xyz[1]=xyz[1]-1;
-    }
-    if(xyz[1]>=45) {
-      xyz[1]=xyz[1]-2;
-    }
-    if(xyz[1]>=60){
-      xyz[1]=xyz[1]-1;
-    }
-    Serial.printfloatx(F("Pitch"), xyz[1], 9, 4, F(",   "));  // muestra en monitor serie rotacion de eje Y, pitch
-    Serial.println();
+//    if(xyz[1]>=25) {
+//      xyz[1]=xyz[1]-1;
+//    }
+//    if(xyz[1]>=45) {
+//      xyz[1]=xyz[1]-2;
+//    }
+//    if(xyz[1]>=60){
+//      xyz[1]=xyz[1]-1;
+//    }
+    //Serial.printfloatx(millis(), 4,F(";   "), xyz[1], 9, 4, F(";   "));  // muestra en monitor serie rotacion de eje Y, pitch
+    String impr = String(millis())+", "+String(xyz[1])+", "+String(escalon);
+    Serial.println(impr);
     // salto de linea
 
       plot = map(xyz[1], -90, 90, 0, 4095);
@@ -58,6 +60,7 @@ void mostrar_valores (int16_t *gyro, int16_t *accel, int32_t *quat, uint32_t *ti
       dac.setVoltage(plot, false);
       //delay(500);
       delay(1);
+      co = co + 1;
   }
 }
 
@@ -131,18 +134,18 @@ void loop() {
   //   delay(5000);
   // }
  
- 
- val=analogRead(A2);
-//  val=10;
-   
-  plo = map(val, 0, 1023, 1200, 1500);
-  delay(1);
+ //Para entrada análogica
+//  val=analogRead(A2);
+//  plo = map(val, 0, 1023, 1200, 1500);
+//  delay(1);
 
   if(inic_motor == false){
   esc.writeMicroseconds(1000);
-  delay(15000);
+  delay(25000);
   inic_motor = true;
+  escalon = 1420;
   }
-  esc.writeMicroseconds(1400);
-
+  esc.writeMicroseconds(escalon);
+  //delay(10000);
+  //esc.writeMicroseconds(1450);
 }       // a funcion mostrar_valores si es el caso  
