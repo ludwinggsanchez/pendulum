@@ -19,10 +19,17 @@ ENABLE_MPU_OVERFLOW_PROTECTION();   // activa proteccion
 // printfloatx funcion para mostrar en monitor serie datos para evitar el uso se multiples print()
 int plot,plo,co;
 int escalon = 0;
+long startTime=0;
+int T = 200;
+long n = 1;
+long prueba;
 int inic_motor=false;
 int intPin = 2;
+float vel_in;
+float ang_in = -45;
 //uint8_t val;
 int val;
+bool incrementar = false;
 bool ready = false;
 Servo esc;
 // mostrar_valores funcion que es llamada cada vez que hay datos disponibles desde el sensor
@@ -59,7 +66,7 @@ void mostrar_valores (int16_t *gyro, int16_t *accel, int32_t *quat, uint32_t *ti
       
       dac.setVoltage(plot, false);
       //delay(500);
-      delay(1);
+      //delay(1);
       co = co + 1;
   }
 }
@@ -119,7 +126,7 @@ void setup() {
   mpu.on_FIFO(mostrar_valores);   // llamado a funcion mostrar_valores si memoria FIFO tiene valores
 }
 void loop() {
-  mpu.dmp_read_fifo();    // funcion que evalua si existen datos nuevos en el sensor y llama
+  //    // funcion que evalua si existen datos nuevos en el sensor y llama
 //      if (plot >= 2045 && plot <= 2051 && ready == false){
 //        delay(5000);
 //        esc.writeMicroseconds(1300);
@@ -134,18 +141,63 @@ void loop() {
   //   delay(5000);
   // }
  
+ 
+//  if (millis() > 25000 && millis()<27000){
+//    vel_in = map(ang_in, -90, 90, 1000, 1800);
+//    esc.writeMicroseconds(vel_in);
+//  }else{ esc.writeMicroseconds(1000);}
+//
+ 
+ 
+
+
+ 
+ if (millis() > n*T){
+  mpu.dmp_read_fifo();
+  //Serial.println("Entra el periodo"); 
+  n=n+1;
+  prueba = n*T;
+  }
+String lol = String(millis())+" "+String(n);
+//Serial.println(lol); 
+//
+   if (millis() > 10000){               
+     
+       
+        if(n%20 == 0){
+          
+              
+                Serial.println(lol);
+                ang_in = (0.25)*n-90;
+
+        }
+             vel_in = map(ang_in, -90, 90, 1000, 1800);
+             esc.writeMicroseconds(vel_in);
+        //delay(2000);          
+  }   
+    else{ esc.writeMicroseconds(1000);
+    Serial.println("aqui");}
+
+ 
+
+  
  //Para entrada análogica
 //  val=analogRead(A2);
 //  plo = map(val, 0, 1023, 1200, 1500);
 //  delay(1);
 
-  if(inic_motor == false){
-  esc.writeMicroseconds(1000);
-  delay(25000);
-  inic_motor = true;
-  escalon = 1420;
-  }
-  esc.writeMicroseconds(escalon);
+
+
+//  if(inic_motor == false){
+//  esc.writeMicroseconds(1000);
+//  
+//  delay(25000);
+//  inic_motor = true;
+//  escalon = 1420;
+//  }
+//  
+
+
   //delay(10000);
   //esc.writeMicroseconds(1450);
 }       // a funcion mostrar_valores si es el caso  
